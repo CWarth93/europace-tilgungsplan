@@ -1,6 +1,6 @@
 # End-to-End Tests
 
-The Cypress suite in `cypress/e2e/repayment-planner.cy.ts` is an executable one-to-one reproduction of the stories in `user-stories.md`:
+The Cypress suite in `cypress/e2e/repayment-planner.cy.ts` is an executable reproduction of the stories in `user-stories.md`. It uses the real deployed application and `POST /api/repayment-plan` for every calculation: it contains no mocked or intercepted API responses.
 
 | Test | User story |
 | --- | --- |
@@ -13,9 +13,7 @@ The Cypress suite in `cypress/e2e/repayment-planner.cy.ts` is an executable one-
 | `US-07` | Receive useful technical errors |
 | `US-08` | Use the application accessibly |
 
-## Current expected status
-
-All eight tests are expected to fail until the Angular frontend and `POST /api/repayment-plan` endpoint have been implemented. The `data-cy` selectors in the suite are the implementation contract for the UI.
+The `data-cy` selectors in the suite are the implementation contract for the UI. Calculation assertions use the example input and independently verify the real API's complete 120-month schedule and its resulting totals.
 
 ## Run locally
 
