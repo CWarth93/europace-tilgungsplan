@@ -1,0 +1,13 @@
+{
+  "name": "europace-tilgungsplan",
+  "private": true,
+  "scripts": {
+    "e2e": "cypress run",
+    "e2e:open": "cypress open"
+  },
+  "devDependencies": {
+    "axe-core": "4.11.0",
+    "cypress": "15.10.0",
+    "cypress-axe": "1.7.0"
+  }
+}

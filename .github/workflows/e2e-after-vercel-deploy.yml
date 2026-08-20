@@ -1,0 +1,54 @@
+name: E2E after Vercel deployment
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  cypress:
+    name: Cypress against production deployment
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment.ref == 'main' &&
+      (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CYPRESS_BASE_URL: ${{ github.event.deployment_status.environment_url }}
+    steps:
+      - name: Check out the tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install E2E dependencies
+        run: npm ci
+
+      - name: Verify the deployed API is reachable
+        run: curl --fail --retry 12 --retry-delay 5 "$CYPRESS_BASE_URL/api/health"
+
+      - name: Run Cypress user-story suite
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          command: npm run e2e
+        env:
+          CYPRESS_BASE_URL: ${{ env.CYPRESS_BASE_URL }}
+
+      - name: Upload Cypress evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-evidence
+          path: |
+            cypress/screenshots
+            cypress/videos
+          if-no-files-found: ignore
