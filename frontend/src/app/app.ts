@@ -29,7 +29,7 @@ export class App {
       this.plan = await response.json() as PlanResult;
     } catch { this.error = 'Berechnung konnte nicht durchgeführt werden. Bitte versuche es erneut.'; } finally { this.loading = false; }
   }
-  money(cents: number): string { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(cents / 100); }
+  money(cents: number): string { return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(cents / 100).replace(/\u00a0/g, ' '); }
   date(value: string): string { return new Intl.DateTimeFormat('de-DE', { timeZone: 'UTC' }).format(new Date(`${value}T00:00:00Z`)); }
   chartPoints(): string { if (!this.plan || this.plan.rows.length < 2) return ''; const rows = this.plan.rows.slice(1); const max = Math.max(...rows.map(row => row.remainingBalanceCents), 1); return rows.map((row, index) => `${4 + index / Math.max(rows.length - 1, 1) * 292},${92 - row.remainingBalanceCents / max * 82}`).join(' '); }
 }
