@@ -4,7 +4,7 @@ A German-language web application that creates a monthly repayment plan (*Tilgun
 
 ## The exercise
 
-This project implements the requirements from the original [exercise brief](../Aufgabe.pdf). The calculation creates an initial payout entry and then monthly annuity payments for the selected fixed-interest period. It shows interest, repayment, payment amount, and the outstanding balance for each month.
+This project implements the requirements from the original [exercise brief](docs/Aufgabe.pdf). The calculation creates an initial payout entry and then monthly annuity payments for the selected fixed-interest period. It shows interest, repayment, payment amount, and the outstanding balance for each month.
 
 ## Solution architecture
 
@@ -21,6 +21,7 @@ The frontend calls `POST /api/repayment-plan`. The backend calculates monetary v
 
 ## Documentation
 
+- [Exercise brief](docs/Aufgabe.pdf) — original task specification.
 - [User stories](docs/user-stories.md) — user needs and acceptance criteria.
 - [UI mockup](docs/ui-mockup.png) — intended screen layout and visual direction.
 - [Implementation plan](docs/implementation-plan.md) — architecture, calculation rules, API contract, and delivery steps.
