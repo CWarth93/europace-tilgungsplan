@@ -12,12 +12,13 @@ The application uses TypeScript throughout.
 
 | Part | Technology | Responsibility |
 | --- | --- | --- |
-| Frontend | Angular | Loan-data form, validation, result summary, balance chart, and repayment table |
-| Backend | Express | REST API, request validation, and repayment-plan calculation |
-| Quality assurance | Cypress | End-to-end tests covering the user stories against the deployed application |
+| Frontend | Angular | Feature components for the loan form, summary, repayment table, and balance chart |
+| Backend | Express | REST API, structured request validation, and repayment-plan calculation |
+| Shared contract | TypeScript | Request, response, schedule, and validation-error types used by both applications |
+| Quality assurance | Node test + Cypress | Calculation/API tests plus end-to-end tests against the deployed application |
 | Hosting | Vercel | Public deployment of the frontend and API |
 
-The frontend calls `POST /api/repayment-plan`. The backend calculates monetary values in cents to avoid floating-point rounding errors and returns the complete payment schedule plus the end-of-term totals.
+The frontend calls `POST /api/repayment-plan`. The backend calculates monetary values in cents to avoid floating-point rounding errors and returns the complete payment schedule plus the end-of-term totals. Invalid requests receive field-specific `400` errors, which the form displays next to the relevant inputs.
 
 ## Documentation
 

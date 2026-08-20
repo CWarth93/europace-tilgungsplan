@@ -1,0 +1,6 @@
+import { Component, Input } from '@angular/core';
+import type { RepaymentPlanResponse } from './repayment-plan.models';
+import { formatMoney } from './formatting';
+
+@Component({ selector: 'app-balance-chart', template: `<aside class="card chart-card" data-cy="balance-chart" aria-label="Restschuldverlauf in Euro"><p class="eyebrow">ENTWICKLUNG</p><h2>Restschuldverlauf</h2><p class="chart-legend">Restschuld in €</p><svg viewBox="0 0 300 100" role="img" aria-label="Fallende Restschuld über die Zinsbindung"><line x1="4" y1="92" x2="296" y2="92" class="axis" /><line x1="4" y1="10" x2="4" y2="92" class="axis" /><polyline [attr.points]="points()" fill="none" stroke="currentColor" stroke-width="3" /></svg><div class="totals"><p>Gezahlte Zinsen</p><strong data-cy="total-interest">{{ money(plan.summary.totalInterestCents) }}</strong><p>Getilgt</p><strong data-cy="total-repayment">{{ money(plan.summary.totalRepaymentCents) }}</strong></div></aside>` })
+export class BalanceChartComponent { @Input({ required: true }) plan!: RepaymentPlanResponse; readonly money = formatMoney; points(): string { const rows = this.plan.rows.slice(1); const max = Math.max(...rows.map(row => row.remainingBalanceCents), 1); return rows.map((row, index) => `${4 + index / Math.max(rows.length - 1, 1) * 292},${92 - row.remainingBalanceCents / max * 82}`).join(' '); } }

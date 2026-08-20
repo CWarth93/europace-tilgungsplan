@@ -1,25 +1,11 @@
 <main class="shell">
   <header class="page-header"><p class="eyebrow">FINANZIERUNGSRECHNER</p><h1>Tilgungsplan</h1><p>Darlehen verständlich planen.</p></header>
-  <section class="card input-card" aria-labelledby="loan-data-title">
-    <div class="section-heading"><div><p class="eyebrow">SCHRITT 1</p><h2 id="loan-data-title">Darlehensdaten</h2></div><span>Monatliche Annuität</span></div>
-    <form data-cy="planner-form" aria-label="Darlehensdaten eingeben" (ngSubmit)="createPlan()" novalidate>
-      <div class="form-grid">
-        <div class="field"><label for="loan-amount">Darlehensbetrag <span>in €</span></label><input data-cy="loan-amount" id="loan-amount" name="loanAmount" type="number" min="0" step="0.01" [(ngModel)]="loanAmount" (blur)="submitted = true" aria-describedby="loan-amount-error" />@if (hasError('loanAmount')) { <p class="field-error" data-cy="loan-amount-error" id="loan-amount-error">{{ fieldMessage('loanAmount') }}</p> }</div>
-        <div class="field"><label for="interest-rate">Sollzins <span>in % p.a.</span></label><input data-cy="interest-rate" id="interest-rate" name="interestRate" type="number" min="0" step="0.01" [(ngModel)]="interestRate" (blur)="submitted = true" aria-describedby="interest-rate-error" />@if (hasError('interestRate')) { <p class="field-error" data-cy="interest-rate-error" id="interest-rate-error">{{ fieldMessage('interestRate') }}</p> }</div>
-        <div class="field"><label for="initial-repayment-rate">Anfängliche Tilgung <span>in % p.a.</span></label><input data-cy="initial-repayment-rate" id="initial-repayment-rate" name="initialRepaymentRate" type="number" min="0" step="0.01" [(ngModel)]="initialRepaymentRate" (blur)="submitted = true" aria-describedby="initial-repayment-rate-error" />@if (hasError('initialRepaymentRate')) { <p class="field-error" data-cy="initial-repayment-rate-error" id="initial-repayment-rate-error">{{ fieldMessage('initialRepaymentRate') }}</p> }</div>
-        <div class="field"><label for="fixed-interest-years">Zinsbindung <span>in Jahren</span></label><input data-cy="fixed-interest-years" id="fixed-interest-years" name="fixedInterestYears" type="number" min="1" step="1" [(ngModel)]="fixedInterestYears" (blur)="submitted = true" aria-describedby="fixed-interest-years-error" />@if (hasError('fixedInterestYears')) { <p class="field-error" data-cy="fixed-interest-years-error" id="fixed-interest-years-error">{{ fieldMessage('fixedInterestYears') }}</p> }</div>
-      </div>
-      <button data-cy="submit-plan" class="primary-button" type="submit" [disabled]="!isValid() || loading">{{ loading ? 'Tilgungsplan wird erstellt …' : 'Tilgungsplan erstellen' }}</button>
-    </form>
-  </section>
+  <app-loan-form [value]="form" [loading]="loading" [serverErrors]="serverErrors" (calculate)="createPlan($event)" />
   @if (error) { <p class="api-error" data-cy="api-error" role="alert">{{ error }}</p> }
   @if (plan; as result) {
     <section class="results" aria-live="polite">
-      <div class="summary-grid"><article class="card summary-card"><p>Monatliche Rate</p><strong data-cy="monthly-rate">{{ money(result.monthlyRateCents) }}</strong></article><article class="card summary-card"><p>Restschuld zum Ende</p><strong data-cy="remaining-balance" class="positive">{{ money(result.summary.remainingBalanceCents) }}</strong></article><article class="card summary-card"><p>Zahlungen gesamt</p><strong data-cy="total-payments">{{ money(result.summary.totalPaymentsCents) }}</strong></article></div>
-      <div class="content-grid">
-        <section class="card table-card"><div class="section-heading"><div><p class="eyebrow">SCHRITT 2</p><h2>Tilgungsplan</h2></div><span>{{ fixedInterestYears }} Jahre Zinsbindung</span></div><div data-cy="plan-scroll-container" class="table-scroll"><table data-cy="repayment-table"><thead><tr><th>Datum</th><th>Restschuld</th><th>Zinsen</th><th>Tilgung</th><th>Rate</th></tr></thead><tbody>@for (row of result.rows; track row.date) { <tr data-cy="plan-row" [attr.data-row-type]="row.type" [class.payout]="row.type === 'payout'"><td>@if (row.type === 'payout') { <span data-cy="payout-row">{{ date(row.date) }}</span> } @else { {{ date(row.date) }} }</td><td>{{ money(row.remainingBalanceCents) }}</td><td>{{ money(row.interestCents) }}</td><td>{{ money(row.repaymentOrPayoutCents) }}</td><td>{{ money(row.paymentCents) }}</td></tr> }</tbody></table></div><div data-cy="plan-pagination" class="pagination">Alle {{ result.rows.length }} Einträge</div></section>
-        <aside class="card chart-card" data-cy="balance-chart" aria-label="Restschuldverlauf in Euro"><p class="eyebrow">ENTWICKLUNG</p><h2>Restschuldverlauf</h2><p class="chart-legend">Restschuld in €</p><svg viewBox="0 0 300 100" role="img" aria-label="Fallende Restschuld über die Zinsbindung"><line x1="4" y1="92" x2="296" y2="92" class="axis" /><line x1="4" y1="10" x2="4" y2="92" class="axis" /><polyline [attr.points]="chartPoints()" fill="none" stroke="currentColor" stroke-width="3" /></svg><div class="totals"><p>Gezahlte Zinsen</p><strong data-cy="total-interest">{{ money(result.summary.totalInterestCents) }}</strong><p>Getilgt</p><strong data-cy="total-repayment">{{ money(result.summary.totalRepaymentCents) }}</strong></div></aside>
-      </div>
+      <app-repayment-summary [plan]="result" />
+      <div class="content-grid"><app-repayment-table [plan]="result" [fixedInterestYears]="form.fixedInterestYears" /><app-balance-chart [plan]="result" /></div>
     </section>
   } @else { <section class="empty-state card"><h2>Dein Tilgungsplan erscheint hier</h2><p>Gib deine Darlehensdaten ein und starte die Berechnung.</p></section> }
 </main>
