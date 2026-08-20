@@ -18,7 +18,9 @@ The application uses TypeScript throughout.
 | Quality assurance | Node test + Cypress | Calculation/API tests plus end-to-end tests against the deployed application |
 | Hosting | Vercel | Public deployment of the frontend and API |
 
-The frontend calls `POST /api/repayment-plan`. The backend calculates monetary values in cents to avoid floating-point rounding errors and returns the complete payment schedule plus the end-of-term totals. Invalid requests receive field-specific `400` errors, which the form displays next to the relevant inputs.
+The flow is: **Angular form → `POST /api/repayment-plan` → Express calculation domain → typed repayment plan → Angular result components**.
+
+The backend calculates monetary values in cents to avoid floating-point rounding errors and returns the complete payment schedule plus the end-of-term totals. Invalid requests receive field-specific `400` errors, which the form displays next to the relevant inputs. The calculation domain has unit tests and the API has integration tests for the exercise example, date/rounding edge cases, early repayment, and invalid requests.
 
 ## Documentation
 
@@ -27,19 +29,43 @@ The frontend calls `POST /api/repayment-plan`. The backend calculates monetary v
 - [UI mockup](docs/ui-mockup.png) — intended screen layout and visual direction.
 - [Implementation plan](docs/implementation-plan.md) — architecture, calculation rules, API contract, and delivery steps.
 - [E2E test documentation](docs/e2e-tests.md) — Cypress coverage and deployment-test workflow.
+- [AI session log](docs/ai-session-log.md) — project-focused transcript of the implementation session.
 
 ## Project structure
 
 ```text
 frontend/   Angular application
 backend/    Express API and calculation domain
+shared/     TypeScript API request, response, and error contracts
 cypress/    Cypress end-to-end tests
 docs/       Product and implementation documentation
 ```
 
 ## Local development
 
-Install dependencies in the relevant project folders, then start the Angular frontend and Express API according to their package scripts. Run the end-to-end suite from the repository root:
+Install dependencies in the root, frontend, and backend folders. Start the API and Angular app in separate terminals:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Run the backend type check and tests:
+
+```bash
+cd backend
+npm run build
+npm test
+```
+
+Run the Cypress suite against the public deployment from the repository root:
 
 ```bash
 npm run e2e
