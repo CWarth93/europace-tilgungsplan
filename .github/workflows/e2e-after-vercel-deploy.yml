@@ -11,7 +11,6 @@ jobs:
     name: Cypress against production deployment
     if: >-
       github.event.deployment_status.state == 'success' &&
-      github.event.deployment.ref == 'main' &&
       (github.event.deployment.environment == 'Production' || github.event.deployment.environment == 'production')
     runs-on: ubuntu-latest
     timeout-minutes: 15
